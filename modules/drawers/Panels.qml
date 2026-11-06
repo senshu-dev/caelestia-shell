@@ -46,7 +46,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: sessionWrapper.anchors.rightMargin + session.width * (1 - session.offsetScale)
+        anchors.rightMargin: Math.round(sessionWrapper.anchors.rightMargin + session.width * (1 - session.offsetScale))
         clip: sidebar.visible || session.visible
 
         implicitWidth: osd.implicitWidth * (1 - osd.offsetScale)
@@ -83,7 +83,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: sidebar.width * (1 - sidebar.offsetScale)
+        anchors.rightMargin: Math.round(sidebar.width * (1 - sidebar.offsetScale))
         clip: sidebar.visible
 
         implicitWidth: session.implicitWidth * (1 - session.offsetScale)
