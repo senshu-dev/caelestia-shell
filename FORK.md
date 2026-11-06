@@ -18,10 +18,9 @@ with cherry-picked features and fixes from upstream development branches.
 - **Per-monitor notification enable/disable** — popup notifications can be disabled
   per-monitor via `notifs.enabled` in per-monitor `shell.json`.
 
-### Planned
-
-- **Per-workspace wallpaper** — each workspace remembers its own wallpaper. Requires
-  porting PR #2210 from QML to the new C++ `Scheme::Wallpapers` class.
+- **Per-workspace wallpaper** — each workspace remembers its own wallpaper. Enable via
+  `background.workspaceWallpapers.enabled` in `shell.json` or the toggle in
+  Wallpaper & Style settings. (Ported from PR #2210 concept to C++ codebase.)
 
 ## Syncing with upstream
 
