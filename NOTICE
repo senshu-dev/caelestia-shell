@@ -1,0 +1,41 @@
+NOTICE — Attribution & Provenance
+==================================
+
+This repository is a personal fork of caelestia-dots/shell, licensed under
+GPL-3.0. All original authors retain copyright over their contributions.
+
+Upstream
+--------
+  Repository: https://github.com/caelestia-dots/shell
+  License:    GPL-3.0
+  Author:     soramanew (2 * r + 2 * t) and contributors
+
+Merged branches & cherry-picked commits
+----------------------------------------
+
+1. Per-monitor popup notifications (PR #2255, stack #2243)
+   Branch: refactor/per-monitor-popup-notifs
+   Author: soramanew <61896496+soramanew@users.noreply.github.com>
+   Includes: feat/notif-models (#2246), refactor/notif-ui (#2247)
+   Description: Makes notification popup state per-monitor independent.
+     Hover pause, fullscreen detection, and expire timers are per-monitor.
+   117 commits merged.
+
+2. Custom notification actions via hints (PR #2259)
+   Branch: feat/custom-notif-actions
+   Author: soramanew <61896496+soramanew@users.noreply.github.com>
+   Description: Support custom notification actions through hints.
+
+3. Fix: invoke default for actionOnClick (PR #2262)
+   Branch: fix/notifs-invoke-click
+   Author: soramanew <61896496+soramanew@users.noreply.github.com>
+   Description: Invoke the default action when actionOnClick is set.
+
+Pending / tracked for future integration
+-----------------------------------------
+
+- Per-workspace wallpaper (PR #2210)
+  Author: systemeror12
+  Status: Requires porting from QML to C++ Scheme module.
+  The upstream PR targets services/Wallpapers.qml which was replaced by
+  plugin/src/Caelestia/Scheme/wallpapers.{cpp,hpp} in the notif refactor.
