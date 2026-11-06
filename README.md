@@ -119,10 +119,8 @@ sudo cmake --install build
 ```
 
 > [!TIP]
-> You can customise the installation location via the CMake flags `INSTALL_LIBDIR`, `INSTALL_QMLDIR`, and
-> `INSTALL_QSCONFDIR` for the libraries (e.g. the version helper), QML plugin, and Quickshell config directories
-> respectively. If you set the `INSTALL_LIBDIR` flag, the `CAELESTIA_LIB_DIR` variable must also be set to
-> the same directory in your system's environment.
+> You can customise the installation location via the CMake flags `INSTALL_QMLDIR` and
+> `INSTALL_QSCONFDIR` for the QML plugin and Quickshell config directories respectively.
 >
 > For example, installing to `~/.config/quickshell/caelestia` for easy local changes:
 >
@@ -689,7 +687,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
             "apps": false,
             "actions": false,
             "schemes": false,
-            "variants": false,
             "wallpapers": false
         },
         "actions": [
@@ -714,14 +711,6 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
                 "icon": "image",
                 "description": "Change the current wallpaper",
                 "command": ["autocomplete", "wallpaper"],
-                "enabled": true,
-                "dangerous": false
-            },
-            {
-                "name": "Variant",
-                "icon": "colors",
-                "description": "Change the current scheme variant",
-                "command": ["autocomplete", "variant"],
                 "enabled": true,
                 "dangerous": false
             },
@@ -821,6 +810,7 @@ For example, to automatically hide the bar on the monitor named `DP-1`:
         "defaultExpireTimeout": 5000,
         "fullscreenExpireTimeout": 2000,
         "clearThreshold": 0.3,
+        "clearVelocity": 1000,
         "expandThreshold": 20,
         "actionOnClick": false,
         "groupPreviewNum": 3,

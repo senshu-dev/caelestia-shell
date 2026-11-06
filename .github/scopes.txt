@@ -19,10 +19,10 @@ components
 config
 core
 daemons
-images
 models
 multimedia
 plugins
+scheme
 services
 settings
 shaders

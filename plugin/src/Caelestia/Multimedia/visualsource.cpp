@@ -5,15 +5,18 @@
 #include <qvideosink.h>
 
 #include "imagecache.hpp"
+#include "remotecache.hpp"
 
 namespace caelestia::shell::multimedia {
-
-using Qt::StringLiterals::operator""_s;
 
 VisualSource::VisualSource(QObject* parent)
     : QObject(parent) {
     m_player.setLoops(QMediaPlayer::Infinite);
     QObject::connect(&m_player, &QMediaPlayer::mediaStatusChanged, this, &VisualSource::onMediaStatusChanged);
+    QObject::connect(RemoteCache::instance(), &RemoteCache::updated, this, [this](const QUrl& url, const QUrl& file) {
+        if (QUrl(m_source) == url)
+            setLocalPath(file.toLocalFile());
+    });
 }
 
 VisualSource::Type VisualSource::type() const {
@@ -43,18 +46,40 @@ void VisualSource::setSource(const QString& source) {
     m_source = source;
     emit sourceChanged();
 
-    const auto path = localPath();
-    const auto provider = QUrl(m_source).scheme() == u"image"_s;
-    const auto mime = path.isEmpty() || provider ? QString() : QMimeDatabase().mimeTypeForFile(path).name();
+    const QUrl url(m_source);
+    if (RemoteCache::isRemote(url)) {
+        m_localPath.clear();
+        load();
+        RemoteCache::instance()->fetch(url).then(this, [this, url](const QUrl& file) {
+            if (QUrl(m_source) == url)
+                setLocalPath(file.toLocalFile());
+        });
+    } else {
+        m_localPath = url.isLocalFile() ? url.toLocalFile() : m_source;
+        load();
+    }
+}
+
+void VisualSource::setLocalPath(const QString& path) {
+    if (m_localPath == path)
+        return;
+
+    m_localPath = path;
+    load();
+}
+
+void VisualSource::load() {
+    const auto provider = QUrl(m_source).scheme() == u"image";
+    const auto mime =
+        m_localPath.isEmpty() || provider ? QString() : QMimeDatabase().mimeTypeForFile(m_localPath).name();
     // We don't use the mime type for svg checking because Qt doesn't.
     // See QQuickPixmap::isScalableImageFormat.
     const auto prettyPath = QUrl(m_source).path(QUrl::PrettyDecoded);
-    m_scalable =
-        provider || prettyPath.endsWith(u"svg"_s) || prettyPath.endsWith(u"svgz"_s) || prettyPath.endsWith(u"pdf"_s);
+    m_scalable = provider || prettyPath.endsWith(u"svg") || prettyPath.endsWith(u"svgz") || prettyPath.endsWith(u"pdf");
 
-    if (mime.startsWith(u"video/"_s))
+    if (mime.startsWith(u"video/"))
         setType(Type::Live);
-    else if (provider || mime.startsWith(u"image/"_s) || mime == u"application/pdf"_s)
+    else if (provider || mime.startsWith(u"image/") || mime == u"application/pdf")
         setType(Type::Still);
     else
         setType(Type::Unknown);
@@ -189,7 +214,7 @@ void VisualSource::watchWindow(QQuickWindow* window) {
 }
 
 void VisualSource::refresh() {
-    const auto path = localPath();
+    const auto& path = m_localPath;
     if (path.isEmpty()) {
         setImagePath({});
         return;
@@ -220,7 +245,7 @@ void VisualSource::refresh() {
     m_key = key;
     m_bucket = bucket;
     setSourceSize(bucket);
-    const auto cached = cache->lookup(key);
+    const auto cached = cache->lookupSync(key);
 
     if (m_type == Type::Live) {
         m_preview = cached;
@@ -244,8 +269,7 @@ void VisualSource::onVideoFrame(const QVideoFrame& frame) {
     setVideoReady(true);
     setImagePath({});
 
-    if (!m_key.isEmpty() && ImageCache::instance()->lookup(m_key).isEmpty())
-        ImageCache::instance()->store(m_key, frame.toImage(), m_bucket, aspectMode());
+    ImageCache::instance()->store(m_key, frame.toImage(), m_bucket, aspectMode());
 
     if (!m_playing)
         unload();
@@ -267,7 +291,7 @@ void VisualSource::onMediaStatusChanged(QMediaPlayer::MediaStatus status) {
 }
 
 void VisualSource::syncPlayer() {
-    const auto url = m_type == Type::Live ? QUrl::fromLocalFile(localPath()) : QUrl();
+    const auto url = m_type == Type::Live ? QUrl::fromLocalFile(m_localPath) : QUrl();
     if (!m_player.source().isEmpty() && m_player.source() != url)
         unload();
 
@@ -303,13 +327,10 @@ void VisualSource::unload() {
     m_player.setSource({});
 }
 
-QString VisualSource::localPath() const {
-    const QUrl url(m_source);
-    return url.isLocalFile() ? url.toLocalFile() : m_source;
-}
-
 QUrl VisualSource::rawUrl() const {
     const QUrl url(m_source);
+    if (RemoteCache::isRemote(url))
+        return QUrl::fromLocalFile(m_localPath);
     return url.isLocalFile() || !url.scheme().isEmpty() ? url : QUrl::fromLocalFile(m_source);
 }
 

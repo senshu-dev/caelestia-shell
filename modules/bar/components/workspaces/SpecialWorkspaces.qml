@@ -6,6 +6,7 @@ import Quickshell.Hyprland
 import Caelestia
 import Caelestia.Components
 import Caelestia.Config
+import Caelestia.Scheme
 import qs.components
 import qs.components.effects
 import qs.services
@@ -15,12 +16,12 @@ Item {
 
     required property HyprlandMonitor monitor
 
-    readonly property int activeSpecialId: monitor?.lastIpcObject.specialWorkspace?.id ?? 0
-    readonly property var wsIds: {
+    readonly property string activeSpecialAddress: monitor?.specialWorkspace?.address ?? ""
+    readonly property var wsAddresses: {
         const allMonitors = !Config.bar.workspaces.perMonitor;
-        return Hypr.workspaces.values.filter(w => w.name.startsWith("special:") && (allMonitors || w.monitor === root.monitor)).map(w => w.id);
+        return Hypr.workspaces.values.filter(w => Hypr.isSpecialWorkspace(w) && (allMonitors || w.monitor === root.monitor)).map(w => w.address);
     }
-    readonly property int activeIdx: wsIds.indexOf(activeSpecialId)
+    readonly property int activeIdx: wsAddresses.indexOf(activeSpecialAddress)
     readonly property real maxViewY: Math.max(0, view.contentHeight - height)
 
     readonly property Workspace activeWs: {
@@ -158,14 +159,14 @@ Item {
         onContentHeightChanged: root.ensureVisible()
 
         model: ScriptModel {
-            values: root.wsIds
+            values: root.wsAddresses
         }
 
         delegate: Workspace {
-            activeWsId: root.activeSpecialId
+            activeWsAddress: root.activeSpecialAddress
             ws: modelData
             monitor: root.monitor
-            offMonitorColour: Colours.palette.m3outline
+            offMonitorColour: Colours.palette.outline
             displayType: Config.bar.workspaces.specialDisplayType
             showWindows: Config.bar.workspaces.showWindowsOnSpecialWorkspaces
             iconRules: GlobalConfig.bar.workspaces.specialWorkspaceIcons
@@ -191,8 +192,8 @@ Item {
         sourceComponent: ActiveIndicator {
             activeWs: root.activeWs
             mask: view
-            color: Colours.palette.m3tertiary
-            contentColour: Colours.palette.m3onTertiary
+            color: Colours.palette.tertiary
+            contentColour: Colours.palette.onTertiary
         }
     }
 
@@ -223,9 +224,9 @@ Item {
 
             const ws = view.itemAt(event.x, event.y - view.y) as Workspace;
             if (ws) {
-                const match = Hypr.workspaces.values.find(w => w.id === ws.ws);
+                const match = Hypr.workspaceByAddress(ws.ws);
                 if (match)
-                    Hypr.toggleSpecial(Hypr.trimWsName(match.name));
+                    Hypr.toggleSpecial(match.name);
             } else {
                 Hypr.toggleSpecial("special");
             }

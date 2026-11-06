@@ -1,3 +1,11 @@
+find_package(caelestia REQUIRED)
+caelestia_setup()
+caelestia_setup_warnings()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wno-nonportable-include-path)
+endif()
+
 find_package(Qt6 REQUIRED COMPONENTS ShaderTools Core Qml Gui Quick QuickControls2 Concurrent Sql Network DBus Multimedia)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Qalculate IMPORTED_TARGET libqalculate REQUIRED)
@@ -15,9 +23,18 @@ qt_standard_project_setup(REQUIRES 6.9)
 include(cmake/pch.cmake)
 include(cmake/qml-module.cmake)
 
-# Header only helpers
-add_library(caelestia-util INTERFACE)
-target_include_directories(caelestia-util INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+# Shared helpers
+add_library(caelestia-util STATIC
+    src/util/i18n.cpp
+    src/util/metaenum.cpp
+    src/util/refgated.cpp
+)
+qt_extract_metatypes(caelestia-util)
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
+file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/src/util" "${CMAKE_CURRENT_BINARY_DIR}/include/util" SYMBOLIC)
+target_include_directories(caelestia-util PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include")
+target_link_libraries(caelestia-util PUBLIC Qt::Core)
+set_target_properties(caelestia-util PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(3rdparty/rgbcx)
 add_subdirectory(src/Caelestia)

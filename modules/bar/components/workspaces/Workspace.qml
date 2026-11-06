@@ -7,6 +7,7 @@ import Quickshell.Hyprland
 import M3Shapes
 import Caelestia.Components
 import Caelestia.Config
+import Caelestia.Scheme
 import qs.components
 import qs.services
 import qs.utils
@@ -14,10 +15,10 @@ import qs.utils
 Item {
     id: root
 
-    required property int modelData
+    required property var modelData
     required property int index
-    required property int activeWsId
-    required property int ws
+    required property string activeWsAddress
+    required property string ws
     required property HyprlandMonitor monitor
 
     required property int displayType
@@ -30,22 +31,22 @@ Item {
     readonly property list<HyprlandToplevel> toplevels: Hypr.toplevelsForWs(ws, GlobalConfig.bar.workspaces.ignoredTags)
     readonly property bool isOccupied: toplevels.length > 0
     readonly property bool hasWindows: isOccupied && showWindows && Config.bar.workspaces.maxWindowIcons > 0
-    readonly property bool focused: activeWsId === ws
+    readonly property bool focused: !!ws && activeWsAddress === ws
     readonly property list<int> focusedShapeList: [MaterialShape.Slanted, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish]
 
-    property color offMonitorColour: Colours.palette.m3outlineVariant
+    property color offMonitorColour: Colours.palette.outlineVariant
     readonly property bool onOtherMonitor: {
         if (Config.bar.workspaces.perMonitor)
             return false;
-        const mon = Hypr.workspaces.values.find(w => w.id === ws)?.monitor;
+        const mon = Hypr.workspaceByAddress(ws)?.monitor;
         return !!(mon && mon !== monitor);
     }
     readonly property color fgColour: {
         if (onOtherMonitor)
             return offMonitorColour;
         if (focused || isOccupied || Config.bar.workspaces.occupiedBg)
-            return Colours.palette.m3onSurface;
-        return Colours.layer(Colours.palette.m3outlineVariant, 2);
+            return Colours.palette.onSurface;
+        return Colours.layer(Colours.palette.outlineVariant, 2);
     }
 
     function updateShape(): void {
@@ -128,8 +129,8 @@ Item {
                 if (label)
                     return label;
 
-                const ws = Hypr.workspaces.values.find(w => w.id === root.ws);
-                const wsName = !ws || ws.name == root.ws ? root.ws : Hypr.trimWsName(ws.name)[0];
+                const ws = Hypr.workspaceByAddress(root.ws);
+                const wsName = !ws || Number.isInteger(Number(root.ws)) ? root.ws : Hypr.trimWsName(ws.name)[0];
 
                 const capitalisation = Config.bar.workspaces.capitalisation;
                 if (capitalisation === BarWorkspaceCapitalisation.Upper)
@@ -229,7 +230,7 @@ Item {
                     grade: 0
                     horizontalAlignment: Text.AlignHCenter
                     text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
-                    color: root.onOtherMonitor ? root.offMonitorColour : Colours.palette.m3onSurfaceVariant
+                    color: root.onOtherMonitor ? root.offMonitorColour : Colours.palette.onSurfaceVariant
 
                     opacity: LazyListView.adding || LazyListView.removing ? 0 : 1
 
@@ -252,7 +253,7 @@ Item {
 
         property string name
         readonly property string icon: Icons.matchIconRuleList(Hypr.trimWsName(name), root.iconRules)
-        readonly property HyprlandWorkspace wsObj: Hypr.workspaces.values.find(w => w.id === root.ws) ?? null
+        readonly property HyprlandWorkspace wsObj: Hypr.workspaceByAddress(root.ws) ?? null
 
         readonly property Connections conn: Connections {
             function onNameChanged(): void {

@@ -95,13 +95,9 @@ void HyprExtras::applyOptions(const QVariantHash& options) {
     request.reserve(12 + options.size() * 40);
     request += u"[[BATCH]]"_s;
     for (auto it = options.constBegin(); it != options.constEnd(); ++it) {
-        if (!m_usingLua) {
-            request += u"keyword "_s + it.key() + u' ' + it.value().toString() + u';';
-        } else {
-            const auto parts = it.key().split(u':');
-            request += u"eval hl.config({ "_s + parts.join(u" = { "_s) + u" = "_s + it.value().toString() +
-                       u" }"_s.repeated(parts.size() - 1) + u" });"_s;
-        }
+        const auto parts = it.key().split(u':');
+        request += u"eval hl.config({ "_s + parts.join(u" = { "_s) + u" = "_s + it.value().toString() +
+                   u" }"_s.repeated(parts.size() - 1) + u" });"_s;
     }
 
     makeRequest(request, [this](bool success, const QByteArray& res) {
@@ -129,8 +125,8 @@ void HyprExtras::refreshOptions() {
 
         for (const auto& o : std::as_const(options)) {
             const auto obj = o.toObject();
-            const auto key = obj.value(u"value"_s).toString();
-            const auto value = obj.value(u"data"_s).toObject().value(u"current"_s).toVariant();
+            const auto key = obj.value(u"value").toString();
+            const auto value = obj.value(u"data").toObject().value(u"current").toVariant();
             if (m_options.value(key) != value) {
                 dirty = true;
                 m_options.insert(key, value);
@@ -189,9 +185,9 @@ void HyprExtras::readEvent() {
 }
 
 void HyprExtras::handleEvent(const QString& event) {
-    if (event == u"configreloaded"_s) {
+    if (event == u"configreloaded") {
         refreshOptions();
-    } else if (event == u"activelayout"_s) {
+    } else if (event == u"activelayout") {
         refreshDevices();
     }
 }

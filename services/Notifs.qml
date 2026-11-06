@@ -8,6 +8,7 @@ import Quickshell.Services.Notifications
 import Caelestia
 import Caelestia.Config
 import Caelestia.I18n
+import Caelestia.Models
 import Caelestia.State
 import qs.components.misc
 import qs.services
@@ -16,11 +17,9 @@ import qs.utils
 Singleton {
     id: root
 
-    property list<NotifData> list: []
-    readonly property list<NotifData> notClosed: list.filter(n => !n.closed)
-    readonly property list<NotifData> popups: list.filter(n => n.popup)
-
-    property bool loaded
+    readonly property alias store: store
+    readonly property alias list: store.notifs
+    readonly property alias groups: store.groups
 
     function hasFullscreen(): bool {
         for (const monitor of Hypr.monitors.values) {
@@ -31,16 +30,7 @@ Singleton {
     }
 
     function shouldShowPopup(): bool {
-        if (PersistentState.doNotDisturb || ShellState.anySidebarOpen())
-            return false;
-        if (GlobalConfig.notifs.fullscreen === NotifsFullscreen.Off && hasFullscreen())
-            return false;
-        return true;
-    }
-
-    onListChanged: {
-        if (loaded)
-            saveTimer.restart();
+        return !PersistentState.doNotDisturb && !ShellState.anySidebarOpen();
     }
 
     Connections {
@@ -57,24 +47,8 @@ Singleton {
         target: PersistentState
     }
 
-    Timer {
-        id: saveTimer
-
-        interval: 1000
-        onTriggered: storage.setText(JSON.stringify(root.notClosed.map(n => ({
-                    time: n.time,
-                    id: n.id,
-                    summary: n.summary,
-                    body: n.body,
-                    appIcon: n.appIcon,
-                    appName: n.appName,
-                    image: n.image,
-                    expireTimeout: n.expireTimeout,
-                    urgency: n.urgency,
-                    resident: n.resident,
-                    hasActionIcons: n.hasActionIcons,
-                    actions: n.actions
-                }))))
+    NotifStore {
+        id: store
     }
 
     NotificationServer {
@@ -88,43 +62,7 @@ Singleton {
         imageSupported: true
         persistenceSupported: true
 
-        onNotification: notif => {
-            notif.tracked = true;
-
-            const comp = notifComp.createObject(root, {
-                popup: root.shouldShowPopup(),
-                notification: notif
-            });
-            root.list = [comp, ...root.list];
-        }
-    }
-
-    FileView {
-        id: storage
-
-        printErrors: false
-        path: `${Paths.state}/notifs.json`
-        onLoaded: {
-            const data = JSON.parse(text());
-            for (const notif of data) {
-                const properties = Object.assign({}, notif);
-
-                // Backwards compatibility for old notifications
-                if (properties.notificationId === undefined && properties.id !== undefined)
-                    properties.notificationId = properties.id;
-
-                delete properties.id;
-                root.list.push(notifComp.createObject(root, properties));
-            }
-            root.list.sort((a, b) => b.time - a.time);
-            root.loaded = true;
-        }
-        onLoadFailed: err => {
-            if (err === FileViewError.FileNotFound) {
-                root.loaded = true;
-                Qt.callLater(() => setText("[]"));
-            }
-        }
+        onNotification: notif => store.add(notif, root.shouldShowPopup())
     }
 
     // qmllint disable unresolved-type
@@ -132,10 +70,7 @@ Singleton {
         // qmllint enable unresolved-type
         name: "clearNotifs"
         description: "Clear all notifications"
-        onPressed: {
-            for (const notif of root.list.slice())
-                notif.close();
-        }
+        onPressed: store.clear()
     }
 
     // qmllint disable unresolved-type
@@ -150,8 +85,7 @@ Singleton {
 
     IpcHandler {
         function clear(): void {
-            for (const notif of root.list.slice())
-                notif.close();
+            store.clear();
         }
 
         function isDndEnabled(): bool {
@@ -171,11 +105,5 @@ Singleton {
         }
 
         target: "notifs"
-    }
-
-    Component {
-        id: notifComp
-
-        NotifData {}
     }
 }

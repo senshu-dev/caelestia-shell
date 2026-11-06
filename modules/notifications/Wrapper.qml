@@ -5,6 +5,7 @@ Item {
     id: root
 
     required property ScreenState screenState
+    required property bool fullscreen
     required property Item sidebarPanel
     property alias osdPanel: content.osdPanel
     property alias sessionPanel: content.sessionPanel
@@ -13,12 +14,13 @@ Item {
     visible: height > 0
     anchors.topMargin: -5
     implicitWidth: Math.max(sidebarPanel.width, content.implicitWidth)
-    implicitHeight: content.implicitHeight
+    implicitHeight: content.implicitHeight - anchors.topMargin
 
     Content {
         id: content
 
         anchors.topMargin: -root.anchors.topMargin
         screenState: root.screenState
+        fullscreen: root.fullscreen
     }
 }

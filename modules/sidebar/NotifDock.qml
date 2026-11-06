@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Widgets
 import Caelestia.Config
 import Caelestia.I18n
+import Caelestia.Scheme
 import qs.components
 import qs.components.containers
 import qs.components.controls
@@ -18,12 +19,12 @@ Item {
 
     required property Props props
     required property ScreenState screenState
-    readonly property int notifCount: Notifs.list.reduce((acc, n) => n.closed ? acc : acc + 1, 0)
+    readonly property int notifCount: Notifs.list.length
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.medium
 
-    Component.onCompleted: Notifs.list.forEach(n => n.popup = false)
+    Component.onCompleted: Notifs.store.closePopups()
 
     Item {
         id: title
@@ -44,7 +45,7 @@ Item {
             opacity: root.notifCount > 0 ? 1 : 0
 
             text: root.notifCount
-            color: Colours.palette.m3outline
+            color: Colours.palette.outline
             font: Tokens.font.label.large
 
             Behavior on anchors.leftMargin {
@@ -68,7 +69,7 @@ Item {
 
             // TRANSLATORS: the count itself is rendered separately, immediately to the left
             text: root.notifCount > 0 ? Tr.trCtxN("notification", "notifications", root.notifCount, "notification count label, number shown separately") : Tr.tr("Notifications")
-            color: Colours.palette.m3outline
+            color: Colours.palette.outline
             font: Tokens.font.label.large
             elide: Text.ElideRight
         }
@@ -103,7 +104,7 @@ Item {
 
                     layer.enabled: true
                     layer.effect: Colouriser {
-                        colorizationColor: Colours.palette.m3outlineVariant
+                        colorizationColor: Colours.palette.outlineVariant
                         brightness: 1
                     }
                 }
@@ -111,7 +112,7 @@ Item {
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
                     text: Tr.tr("All up to date!")
-                    color: Colours.palette.m3outlineVariant
+                    color: Colours.palette.outlineVariant
                     font: Tokens.font.headline.builders.small.width(90).build()
                 }
             }
@@ -151,18 +152,17 @@ Item {
 
         repeat: true
         triggeredOnStart: true
-        interval: Math.max(15, Math.min(80, 69.8 - 12.3 * Math.log(Notifs.notClosed.length)))
+        interval: Math.max(15, Math.min(80, 69.8 - 12.3 * Math.log(Notifs.list.length)))
         onTriggered: {
-            const first = Notifs.notClosed[0];
-            if (!first) {
+            const group = Notifs.groups[0];
+            if (!group) {
                 stop();
                 return;
             }
 
-            const appName = first.appName;
             let cleared = 0;
-            for (const n of Notifs.notClosed.filter(n => n.appName === appName)) {
-                n.close();
+            for (const n of [...group.notifs]) {
+                n.dismiss();
                 cleared++;
                 if (cleared > 30) {
                     interval = 5;
