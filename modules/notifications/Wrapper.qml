@@ -1,4 +1,5 @@
 import QtQuick
+import Caelestia.Config
 import qs.components
 
 Item {
@@ -11,10 +12,10 @@ Item {
     property alias sessionPanel: content.sessionPanel
     property alias utilitiesPanel: content.utilitiesPanel
 
-    visible: height > 0
+    visible: height > 0 && Config.notifs.enabled
     anchors.topMargin: -5
-    implicitWidth: Math.max(sidebarPanel.width, content.implicitWidth)
-    implicitHeight: content.implicitHeight - anchors.topMargin
+    implicitWidth: Config.notifs.enabled ? Math.max(sidebarPanel.width, content.implicitWidth) : 0
+    implicitHeight: Config.notifs.enabled ? content.implicitHeight - anchors.topMargin : 0
 
     Content {
         id: content
