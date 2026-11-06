@@ -15,6 +15,9 @@ with cherry-picked features and fixes from upstream development branches.
 - **actionOnClick default fix** — the default action is properly invoked when
   `actionOnClick` is configured. (PR #2262)
 
+- **Per-monitor notification enable/disable** — popup notifications can be disabled
+  per-monitor via `notifs.enabled` in per-monitor `shell.json`.
+
 ### Planned
 
 - **Per-workspace wallpaper** — each workspace remembers its own wallpaper. Requires
