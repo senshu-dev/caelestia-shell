@@ -121,6 +121,16 @@ PageBase {
         ToggleRow {
             Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
 
+            text: Tr.tr("Per-workspace wallpapers")
+            subtext: Tr.tr("Remember wallpaper for each workspace")
+            disabled: !Config.background.wallpaperEnabled
+            checked: GlobalConfig.background.workspaceWallpapers.enabled
+            onToggled: GlobalConfig.background.workspaceWallpapers.enabled = checked
+        }
+
+        ToggleRow {
+            Layout.topMargin: Tokens.spacing.extraSmall / 2 - parent.spacing
+
             text: Tr.tr("Transparency")
             // TRANSLATORS: %1/%2 = opacity values from 0 to 1 for the base surface and layered surfaces
             subtext: Tr.tr("Base %1, layers %2").arg(Tokens.transparency.base).arg(Tokens.transparency.layers)

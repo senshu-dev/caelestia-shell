@@ -1,10 +1,12 @@
 import QtQuick
+import Quickshell
 import Caelestia
 import Caelestia.Config
 import Caelestia.Multimedia
 import Caelestia.Scheme
 import Caelestia.Shaders
 import Caelestia.State
+import qs.services
 
 Item {
     id: root
@@ -19,7 +21,17 @@ Item {
         return Shaders[transition] ?? Shaders.crossfade;
     }
 
-    property string source: Wallpapers.current
+    property ShellScreen screen: null
+
+    property string source: {
+        if (screen && GlobalConfig.background.workspaceWallpapers.enabled) {
+            const wsName = Hypr.monitorFor(screen)?.activeWorkspace?.name ?? "";
+            const wall = wsName ? (PersistentState.workspaceWallpapers[wsName] ?? "") : "";
+            if (wall)
+                return wall;
+        }
+        return Wallpapers.current;
+    }
     property ShaderEffectSource currentCapture: capture1
     property real transitionProgress: 1
 

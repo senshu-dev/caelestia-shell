@@ -47,6 +47,11 @@ public:
     Q_INVOKABLE static QString defaultWallpaper();
     Q_INVOKABLE static QString categoryFor(const caelestia::shell::models::FileSystemEntry* entry);
 
+    Q_INVOKABLE QString wallpaperForWorkspace(const QString& wsName) const;
+    Q_INVOKABLE void assignToWorkspace(const QString& wsName, const QString& path);
+    Q_INVOKABLE void clearWorkspace(const QString& wsName);
+    Q_INVOKABLE void clearWorkspaces();
+
 signals:
     void committedChanged();
     void currentChanged();

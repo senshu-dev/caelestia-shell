@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Caelestia.Config
 import Caelestia.Models
 import Caelestia.Scheme
+import qs.services
 import qs.utils
 import qs.modules.nexus.common
 
@@ -48,6 +49,11 @@ PageBase {
                 text: modelData?.name ?? ""
                 onClicked: {
                     Wallpapers.setWallpaper(modelData.path);
+                    if (GlobalConfig.background.workspaceWallpapers.enabled) {
+                        const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
+                        if (wsName)
+                            Wallpapers.assignToWorkspace(wsName, modelData.path);
+                    }
                     root.nState.closeSubPage();
                     root.nState.closeSubPage();
                 }

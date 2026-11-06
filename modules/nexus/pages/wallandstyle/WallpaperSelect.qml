@@ -11,6 +11,7 @@ import Caelestia.Scheme
 import qs.components
 import qs.components.controls
 import qs.components.filedialog
+import qs.services
 import qs.utils
 import qs.modules.nexus.common
 
@@ -19,6 +20,15 @@ PageBase {
 
     title: Tr.tr("Wallpapers")
     isSubPage: true
+
+    function setAndAssign(path: string): void {
+        Wallpapers.setWallpaper(path);
+        if (GlobalConfig.background.workspaceWallpapers.enabled) {
+            const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
+            if (wsName)
+                Wallpapers.assignToWorkspace(wsName, path);
+        }
+    }
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -48,7 +58,7 @@ PageBase {
                     filterLabel: Tr.tr("Image files")
                     filters: Images.validImageExtensions
                     onAccepted: path => {
-                        Wallpapers.setWallpaper(path);
+                        root.setAndAssign(path);
                         root.nState.closeSubPage();
                     }
                 }
@@ -64,7 +74,12 @@ PageBase {
                 verticalPadding: Tokens.padding.medium
                 type: IconTextButton.Tonal
                 onClicked: {
-                    Wallpapers.setRandom(); // TODO: add random
+                    Wallpapers.setRandom();
+                    if (GlobalConfig.background.workspaceWallpapers.enabled) {
+                        const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
+                        if (wsName)
+                            Wallpapers.assignToWorkspace(wsName, Wallpapers.current);
+                    }
                     root.nState.closeSubPage();
                 }
             }
@@ -77,7 +92,7 @@ PageBase {
             text: Tr.tr("Featured wallpaper")
             fillLabel: false
             onClicked: {
-                Wallpapers.setWallpaper(Wallpapers.defaultWallpaper());
+                root.setAndAssign(Wallpapers.defaultWallpaper());
                 root.nState.closeSubPage();
             }
         }
@@ -143,7 +158,7 @@ PageBase {
                             root.nState.selectedWallpaperCategory = Wallpapers.categoryFor(modelData);
                             root.nState.openSubPage(2); // Category page
                         } else {
-                            Wallpapers.setWallpaper(modelData.path);
+                            root.setAndAssign(modelData.path);
                             root.nState.closeSubPage();
                         }
                     }

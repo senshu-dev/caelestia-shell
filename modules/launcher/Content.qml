@@ -8,6 +8,7 @@ import Caelestia.Scheme
 import qs.components
 import qs.components.controls
 import qs.modules.launcher.services
+import qs.services
 
 Item {
     id: root
@@ -66,6 +67,11 @@ Item {
             if (currentItem) {
                 if (list.showWallpapers) {
                     Wallpapers.setWallpaper(currentItem.modelData.path);
+                    if (GlobalConfig.background.workspaceWallpapers.enabled) {
+                        const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
+                        if (wsName)
+                            Wallpapers.assignToWorkspace(wsName, currentItem.modelData.path);
+                    }
                     root.screenState.launcher = false;
                 } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
                     if (typeof currentItem.onClicked === "function")

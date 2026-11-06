@@ -10,6 +10,7 @@ qml_module(caelestia-scheme
     LIBRARIES
         caelestia-config
         caelestia-models
+        caelestia-state
         caelestia::caelestia
     DEPENDENCIES
         Caelestia.Models

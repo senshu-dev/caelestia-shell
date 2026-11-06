@@ -48,6 +48,7 @@ Variants {
                 active: Config.background.wallpaperEnabled
 
                 sourceComponent: Wallpaper {}
+                onLoaded: item.screen = win.modelData
             }
 
             Visualiser {

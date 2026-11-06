@@ -1,17 +1,21 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Caelestia.Config
 import Caelestia.I18n
 import Caelestia.Scheme
+import Caelestia.State
 import qs.components
 import qs.components.filedialog
 import qs.components.widgets
+import qs.services
 import qs.utils
 
 Item {
     id: root
 
+    property ShellScreen screen: null
     property bool completed
 
     Component.onCompleted: completed = true
@@ -58,7 +62,14 @@ Item {
                             title: Tr.tr("Select a wallpaper")
                             filterLabel: Tr.tr("Image files")
                             filters: Images.validImageExtensions
-                            onAccepted: path => Wallpapers.setWallpaper(path)
+                            onAccepted: path => {
+                                Wallpapers.setWallpaper(path);
+                                if (GlobalConfig.background.workspaceWallpapers.enabled) {
+                                    const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
+                                    if (wsName)
+                                        Wallpapers.assignToWorkspace(wsName, path);
+                                }
+                            }
                         }
 
                         StateLayer {
@@ -86,5 +97,6 @@ Item {
         id: impl
 
         anchors.fill: parent
+        screen: root.screen
     }
 }

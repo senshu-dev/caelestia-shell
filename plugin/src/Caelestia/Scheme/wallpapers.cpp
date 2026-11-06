@@ -8,6 +8,7 @@
 
 #include "config/rootnodes.hpp"
 #include "config/userpaths.hpp"
+#include "state/rootnodes.hpp"
 
 namespace caelestia::shell::scheme {
 
@@ -119,6 +120,37 @@ QString Wallpapers::categoryFor(const models::FileSystemEntry* entry) {
     if (const auto idx = category.indexOf(u'/'); idx != -1)
         return category.mid(0, idx);
     return category;
+}
+
+QString Wallpapers::wallpaperForWorkspace(const QString& wsName) const {
+    const auto walls = state::PersistentState::instance()->workspaceWallpapers();
+    const auto it = walls.find(wsName);
+    if (it != walls.end()) {
+        const auto path = it->toString();
+        if (!path.isEmpty() && QFileInfo::exists(path))
+            return path;
+    }
+    return {};
+}
+
+void Wallpapers::assignToWorkspace(const QString& wsName, const QString& path) {
+    if (wsName.isEmpty())
+        return;
+    auto walls = state::PersistentState::instance()->workspaceWallpapers();
+    walls[wsName] = path;
+    state::PersistentState::instance()->set_workspaceWallpapers(walls);
+}
+
+void Wallpapers::clearWorkspace(const QString& wsName) {
+    auto walls = state::PersistentState::instance()->workspaceWallpapers();
+    if (!walls.contains(wsName))
+        return;
+    walls.remove(wsName);
+    state::PersistentState::instance()->set_workspaceWallpapers(walls);
+}
+
+void Wallpapers::clearWorkspaces() {
+    state::PersistentState::instance()->set_workspaceWallpapers({});
 }
 
 void Wallpapers::loadState() {
