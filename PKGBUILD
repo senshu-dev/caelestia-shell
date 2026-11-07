@@ -4,7 +4,7 @@
 
 _pkgname='caelestia-shell'
 pkgname="$_pkgname-custom"
-pkgver=2.5.0.r187.g8c8a748f
+pkgver=2.5.0.r188.g11835872
 pkgrel=1
 pkgdesc='Custom fork of Caelestia shell with per-monitor notifications'
 arch=('x86_64' 'aarch64')
