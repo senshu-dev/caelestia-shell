@@ -63,11 +63,12 @@ Item {
                             filterLabel: Tr.tr("Image files")
                             filters: Images.validImageExtensions
                             onAccepted: path => {
-                                Wallpapers.setWallpaper(path);
                                 if (GlobalConfig.background.workspaceWallpapers.enabled) {
                                     const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
                                     if (wsName)
                                         Wallpapers.assignToWorkspace(wsName, path);
+                                } else {
+                                    Wallpapers.setWallpaper(path);
                                 }
                             }
                         }

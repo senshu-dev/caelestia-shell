@@ -22,11 +22,12 @@ PageBase {
     isSubPage: true
 
     function setAndAssign(path: string): void {
-        Wallpapers.setWallpaper(path);
         if (GlobalConfig.background.workspaceWallpapers.enabled) {
             const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
             if (wsName)
                 Wallpapers.assignToWorkspace(wsName, path);
+        } else {
+            Wallpapers.setWallpaper(path);
         }
     }
 
@@ -74,11 +75,17 @@ PageBase {
                 verticalPadding: Tokens.padding.medium
                 type: IconTextButton.Tonal
                 onClicked: {
-                    Wallpapers.setRandom();
                     if (GlobalConfig.background.workspaceWallpapers.enabled) {
-                        const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
-                        if (wsName)
-                            Wallpapers.assignToWorkspace(wsName, Wallpapers.current);
+                        const entries = Wallpapers.model.entries;
+                        if (entries.length > 0) {
+                            const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
+                            if (wsName) {
+                                const path = entries[Math.floor(Math.random() * entries.length)].path;
+                                Wallpapers.assignToWorkspace(wsName, path);
+                            }
+                        }
+                    } else {
+                        Wallpapers.setRandom();
                     }
                     root.nState.closeSubPage();
                 }

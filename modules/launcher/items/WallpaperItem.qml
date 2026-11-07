@@ -31,11 +31,12 @@ Item {
 
         radius: Tokens.rounding.large
         onClicked: {
-            Wallpapers.setWallpaper(root.modelData.path);
             if (GlobalConfig.background.workspaceWallpapers.enabled) {
                 const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
                 if (wsName)
                     Wallpapers.assignToWorkspace(wsName, root.modelData.path);
+            } else {
+                Wallpapers.setWallpaper(root.modelData.path);
             }
             root.screenState.launcher = false;
         }
