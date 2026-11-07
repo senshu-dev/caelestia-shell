@@ -1,5 +1,10 @@
 #include "visualanalyser.hpp"
 
+#include <qdir.h>
+#include <qdiriterator.h>
+#include <qicon.h>
+#include <qimage.h>
+#include <qimagereader.h>
 #include <qqmlengine.h>
 #include <qquickimageprovider.h>
 #include <qsize.h>
@@ -12,6 +17,39 @@ namespace caelestia::shell::multimedia {
 namespace {
 
 constexpr QSize k_providerSize(64, 64);
+
+// Load an icon by name from the icon theme using QImage (software path).
+// Avoids QIcon::pixmap → QPlatformPixmap::fromFile which can SIGSEGV
+// on certain GPU/platform configurations (e.g. NVIDIA + Wayland).
+QImage loadThemeIconImage(const QString& name, const QSize& size) {
+    static const QStringList exts = {
+        QStringLiteral(".svg"), QStringLiteral(".svgz"),
+        QStringLiteral(".png"), QStringLiteral(".xpm"),
+    };
+
+    QStringList themes = {QIcon::themeName()};
+    if (auto fb = QIcon::fallbackThemeName(); !fb.isEmpty() && fb != themes.first())
+        themes << fb;
+    themes << QStringLiteral("hicolor");
+
+    for (const auto& searchPath : QIcon::themeSearchPaths()) {
+        for (const auto& theme : themes) {
+            const auto base = searchPath + u'/' + theme;
+            if (!QDir(base).exists()) continue;
+
+            for (const auto& ext : exts) {
+                QDirIterator it(base, {name + ext}, QDir::Files, QDirIterator::Subdirectories);
+                if (it.hasNext()) {
+                    QImageReader reader(it.next());
+                    reader.setScaledSize(size);
+                    auto image = reader.read();
+                    if (!image.isNull()) return image;
+                }
+            }
+        }
+    }
+    return {};
+}
 
 } // namespace
 
@@ -64,6 +102,41 @@ void VisualAnalyser::analyse(const QString& path) {
 }
 
 void VisualAnalyser::analyseProvider(const QUrl& url) {
+    // For icon providers, load the file directly via QImage (software path)
+    // to avoid SIGSEGV in QPlatformPixmap::fromFile
+    if (url.host() == u"icon") {
+        auto id = url.toString(QUrl::RemoveScheme | QUrl::RemoveAuthority).mid(1);
+
+        QString iconName;
+        QString filePath;
+
+        auto splitIdx = id.indexOf(u"?path=");
+        if (splitIdx != -1) {
+            iconName = id.left(splitIdx);
+            auto path = id.mid(splitIdx + 6);
+            filePath = QStringLiteral("/%1/%2").arg(path, iconName.mid(iconName.lastIndexOf(u'/') + 1));
+        } else {
+            splitIdx = id.indexOf(u"?fallback=");
+            iconName = splitIdx != -1 ? id.left(splitIdx) : id;
+        }
+
+        if (iconName.isEmpty()) return;
+
+        apply(QtConcurrent::run([iconName, filePath, size = k_providerSize]() -> media::Analysis {
+            if (!filePath.isEmpty()) {
+                QImageReader reader(filePath);
+                reader.setScaledSize(size);
+                auto image = reader.read();
+                if (!image.isNull()) return media::analyseImage(image);
+            }
+
+            auto image = loadThemeIconImage(iconName, size);
+            if (image.isNull()) return {};
+            return media::analyseImage(image);
+        }));
+        return;
+    }
+
     const auto* engine = qmlEngine(this);
     if (!engine)
         return;
@@ -72,7 +145,6 @@ void VisualAnalyser::analyseProvider(const QUrl& url) {
     if (!base)
         return;
 
-    // Keep the ?path= / ?fallback= query, drop only scheme, host and leading slash
     const auto id = url.toString(QUrl::RemoveScheme | QUrl::RemoveAuthority).mid(1);
 
     if (base->imageType() == QQmlImageProviderBase::Image) {
