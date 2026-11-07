@@ -79,6 +79,10 @@ models::FileSystemModel* Wallpapers::model() const {
     return m_model;
 }
 
+int Wallpapers::workspaceWallpaperRevision() const {
+    return m_wsWallpaperRevision;
+}
+
 void Wallpapers::commit() {
     if (m_committed)
         return;
@@ -139,6 +143,8 @@ void Wallpapers::assignToWorkspace(const QString& wsName, const QString& path) {
     auto walls = state::PersistentState::instance()->workspaceWallpapers();
     walls[wsName] = path;
     state::PersistentState::instance()->set_workspaceWallpapers(walls);
+    ++m_wsWallpaperRevision;
+    emit workspaceWallpaperChanged();
 }
 
 void Wallpapers::clearWorkspace(const QString& wsName) {
@@ -147,10 +153,14 @@ void Wallpapers::clearWorkspace(const QString& wsName) {
         return;
     walls.remove(wsName);
     state::PersistentState::instance()->set_workspaceWallpapers(walls);
+    ++m_wsWallpaperRevision;
+    emit workspaceWallpaperChanged();
 }
 
 void Wallpapers::clearWorkspaces() {
     state::PersistentState::instance()->set_workspaceWallpapers({});
+    ++m_wsWallpaperRevision;
+    emit workspaceWallpaperChanged();
 }
 
 void Wallpapers::loadState() {

@@ -6,7 +6,9 @@
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Caelestia.Config
+import Caelestia.Scheme
 import qs.services
 import qs.modules.areapicker
 import qs.modules.background
@@ -38,6 +40,30 @@ ShellRoot {
         target: ShellState
         property: "shellRoot"
         value: root
+    }
+
+    IpcHandler {
+        function set(path: string): void {
+            Wallpapers.setWallpaper(path);
+        }
+
+        function assign(wsName: string, path: string): void {
+            Wallpapers.assignToWorkspace(wsName, path);
+        }
+
+        function clear(wsName: string): void {
+            Wallpapers.clearWorkspace(wsName);
+        }
+
+        function clearAll(): void {
+            Wallpapers.clearWorkspaces();
+        }
+
+        function get(wsName: string): string {
+            return Wallpapers.wallpaperForWorkspace(wsName) || Wallpapers.current;
+        }
+
+        target: "wallpaper"
     }
 
     // Modules

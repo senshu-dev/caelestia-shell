@@ -24,9 +24,10 @@ Item {
     property ShellScreen screen: null
 
     property string source: {
+        CUtils.dependency(Wallpapers.workspaceWallpaperRevision);
         if (screen && GlobalConfig.background.workspaceWallpapers.enabled) {
             const wsName = Hypr.monitorFor(screen)?.activeWorkspace?.name ?? "";
-            const wall = wsName ? (PersistentState.workspaceWallpapers[wsName] ?? "") : "";
+            const wall = wsName ? Wallpapers.wallpaperForWorkspace(wsName) : "";
             if (wall)
                 return wall;
         }

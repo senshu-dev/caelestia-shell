@@ -48,12 +48,11 @@ PageBase {
                 source: String(modelData?.path ?? "")
                 text: modelData?.name ?? ""
                 onClicked: {
+                    Wallpapers.setWallpaper(modelData.path);
                     if (GlobalConfig.background.workspaceWallpapers.enabled) {
                         const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
                         if (wsName)
                             Wallpapers.assignToWorkspace(wsName, modelData.path);
-                    } else {
-                        Wallpapers.setWallpaper(modelData.path);
                     }
                     root.nState.closeSubPage();
                     root.nState.closeSubPage();

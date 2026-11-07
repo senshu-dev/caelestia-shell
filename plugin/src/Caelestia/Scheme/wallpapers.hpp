@@ -24,6 +24,8 @@ class Wallpapers : public QObject {
 
     Q_PROPERTY(caelestia::shell::models::FileSystemModel* model READ model CONSTANT)
 
+    Q_PROPERTY(int workspaceWallpaperRevision READ workspaceWallpaperRevision NOTIFY workspaceWallpaperChanged)
+
 public:
     static Wallpapers* instance();
     static Wallpapers* create(QQmlEngine* engine, QJSEngine* jsEngine);
@@ -38,6 +40,7 @@ public:
     [[nodiscard]] const media::Analysis& analysis() const;
 
     [[nodiscard]] models::FileSystemModel* model() const;
+    [[nodiscard]] int workspaceWallpaperRevision() const;
 
     Q_INVOKABLE void commit();
     Q_INVOKABLE void reset();
@@ -59,6 +62,7 @@ signals:
     void coloursChanged();
 
     void analysisDone(bool committed);
+    void workspaceWallpaperChanged();
 
 private:
     explicit Wallpapers(QObject* parent = nullptr);
@@ -68,6 +72,7 @@ private:
     QString m_currentCommitted;
 
     media::Analysis m_analysis;
+    int m_wsWallpaperRevision = 0;
     QFileSystemWatcher m_watcher;
     models::FileSystemModel* const m_model;
 

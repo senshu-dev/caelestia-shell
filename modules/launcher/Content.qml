@@ -66,12 +66,11 @@ Item {
             const currentItem = list.currentList?.currentItem;
             if (currentItem) {
                 if (list.showWallpapers) {
+                    Wallpapers.setWallpaper(currentItem.modelData.path);
                     if (GlobalConfig.background.workspaceWallpapers.enabled) {
                         const wsName = Hypr.focusedMonitor?.activeWorkspace?.name ?? "";
                         if (wsName)
                             Wallpapers.assignToWorkspace(wsName, currentItem.modelData.path);
-                    } else {
-                        Wallpapers.setWallpaper(currentItem.modelData.path);
                     }
                     root.screenState.launcher = false;
                 } else if (text.startsWith(GlobalConfig.launcher.actionPrefix)) {
