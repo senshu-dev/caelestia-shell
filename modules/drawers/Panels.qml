@@ -139,6 +139,7 @@ Item {
     Toasts.Toasts {
         id: toasts
 
+        visible: Config.utilities.enabled
         anchors.bottom: sidebar.visible ? parent.bottom : utilities.top
         anchors.right: sidebar.left
         anchors.margins: Tokens.padding.medium
