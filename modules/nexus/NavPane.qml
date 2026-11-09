@@ -1,4 +1,3 @@
-import "navpane"
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
@@ -7,6 +6,7 @@ import Caelestia.Scheme
 import qs.components
 import qs.components.controls
 import qs.modules.nexus
+import qs.modules.nexus.navpane
 
 ColumnLayout {
     id: root

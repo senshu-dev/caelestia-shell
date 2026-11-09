@@ -5,6 +5,7 @@ import Quickshell
 import Caelestia.Config
 import Caelestia.Scheme
 import qs.components.controls
+import qs.services
 import qs.modules.launcher.items
 import qs.modules.launcher.services
 

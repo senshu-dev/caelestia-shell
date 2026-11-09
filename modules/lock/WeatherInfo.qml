@@ -1,9 +1,9 @@
-import "weather"
 import QtQuick
 import Caelestia.Config
 import Caelestia.Scheme
 import qs.components
 import qs.services
+import qs.modules.lock.weather
 
 StyledRect {
     id: root
