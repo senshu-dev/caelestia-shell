@@ -65,7 +65,7 @@ StyledWindow {
     name: "drawers"
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: (fsTransitionProg > 0 && contentItem.Config.general.showOverFullscreen) || (specialWs && hasFullscreenOnNormalWs) ? WlrLayer.Overlay : WlrLayer.Top
-    WlrLayershell.keyboardFocus: screenState.launcher || screenState.session ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: screenState.launcher || screenState.session || screenState.clipboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     mask: hasFullscreen ? emptyRegion : regions
 
@@ -229,6 +229,13 @@ StyledWindow {
         }
 
         PanelBg {
+            id: clipboardBg
+
+            panel: panels.clipboard
+            deformAmount: 0.1
+        }
+
+        PanelBg {
             id: popoutBg
 
             // Extra width to prevent vertical movement deformation partially detaching panel from bar
@@ -291,6 +298,9 @@ StyledWindow {
             }
             popouts.transform: Matrix4x4 {
                 matrix: popoutBg.deformMatrix
+            }
+            clipboard.transform: Matrix4x4 {
+                matrix: clipboardBg.deformMatrix
             }
         }
 

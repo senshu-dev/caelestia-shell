@@ -23,6 +23,7 @@ CustomMouseArea {
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
     property bool sidebarShortcutActive
+    property bool clipboardHoverActive
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
         const panelY = root.borderThickness + panel.y;
@@ -64,7 +65,13 @@ CustomMouseArea {
     acceptedButtons: fullscreen ? Qt.NoButton : Qt.AllButtons
     hoverEnabled: true
 
-    onPressed: event => dragStart = Qt.point(event.x, event.y)
+    onPressed: event => {
+        dragStart = Qt.point(event.x, event.y);
+        if (screenState.clipboard && !inBottomPanel(panels.clipboard, event.x, event.y, true)) {
+            screenState.clipboard = false;
+            clipboardHoverActive = false;
+        }
+    }
     onContainsMouseChanged: {
         if (!containsMouse) {
             // Only hide if not activated by shortcut
@@ -89,6 +96,11 @@ CustomMouseArea {
 
             if (Config.sidebar.showOnHover && !sidebarShortcutActive)
                 screenState.sidebar = false;
+
+            if (clipboardHoverActive && !panels.clipboard.isFocused) {
+                screenState.clipboard = false;
+                clipboardHoverActive = false;
+            }
         }
     }
 
@@ -241,6 +253,19 @@ CustomMouseArea {
             utilitiesShortcutActive = false;
         }
 
+        // Show clipboard on hover (bottom-left corner)
+        if (!screenState.clipboard) {
+            if (inBottomPanel(panels.clipboard, x, y, true)) {
+                clipboardHoverActive = true;
+                screenState.clipboard = true;
+            }
+        } else if (clipboardHoverActive) {
+            if (!inBottomPanel(panels.clipboard, x, y, true) && !panels.clipboard.isFocused) {
+                clipboardHoverActive = false;
+                screenState.clipboard = false;
+            }
+        }
+
         // Show popouts on hover
         if (x < bar.implicitWidth) {
             bar.checkPopout(y);
@@ -252,7 +277,19 @@ CustomMouseArea {
 
     // Monitor individual visibility changes
     Connections {
+        function onClipboardChanged() {
+            if (root.screenState.clipboard) {
+                root.screenState.launcher = false;
+                root.screenState.dashboard = false;
+            } else {
+                root.clipboardHoverActive = false;
+            }
+        }
+
         function onLauncherChanged() {
+            if (root.screenState.launcher) {
+                root.screenState.clipboard = false;
+            }
             // If launcher is hidden, clear shortcut flags for dashboard and OSD
             if (!root.screenState.launcher) {
                 root.dashboardShortcutActive = false;

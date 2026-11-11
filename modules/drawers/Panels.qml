@@ -12,6 +12,7 @@ import qs.modules.sidebar as Sidebar
 import qs.modules.utilities as Utilities
 import qs.modules.bar.popouts as BarPopouts
 import qs.modules.utilities.toasts as Toasts
+import qs.modules.clipboard as Clipboard
 
 Item {
     id: root
@@ -34,6 +35,7 @@ Item {
     readonly property alias utilities: utilities
     readonly property alias toasts: toasts
     readonly property alias sidebar: sidebar
+    readonly property alias clipboard: clipboard
 
     anchors.fill: parent
     anchors.margins: borderThickness
@@ -154,5 +156,14 @@ Item {
         anchors.bottom: utilities.top
         anchors.right: parent.right
         anchors.topMargin: -notifications.anchors.topMargin
+    }
+
+    Clipboard.Wrapper {
+        id: clipboard
+
+        screenState: root.screenState
+
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
     }
 }
