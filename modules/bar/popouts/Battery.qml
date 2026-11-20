@@ -292,7 +292,7 @@ Column {
                     anchors.verticalCenter: parent.verticalCenter
                     text: root.chargeLimit < 100 ? "battery_saver" : "battery_full"
                     fontStyle: Tokens.font.icon.small
-                    color: Colours.palette.m3primary
+                    color: Colours.palette.primary
                 }
 
                 StyledText {
@@ -301,7 +301,7 @@ Column {
                     anchors.verticalCenter: parent.verticalCenter
                     text: Tr.tr("Charge limit")
                     font: Tokens.font.label.medium
-                    color: Colours.palette.m3onSurfaceVariant
+                    color: Colours.palette.onSurfaceVariant
                 }
             }
 
@@ -311,7 +311,7 @@ Column {
                 implicitWidth: badgeText.implicitWidth + Tokens.padding.small * 2
                 implicitHeight: badgeText.implicitHeight + 4
                 radius: Tokens.rounding.full
-                color: root.chargeLimit < 100 ? Colours.palette.m3primary : Colours.tPalette.m3surfaceContainer
+                color: root.chargeLimit < 100 ? Colours.palette.primary : Colours.tPalette.surfaceContainer
 
                 Behavior on color {
                     CAnim {}
@@ -323,7 +323,7 @@ Column {
                     anchors.centerIn: parent
                     text: `${root.chargeLimit}%`
                     font: Tokens.font.label.small
-                    color: root.chargeLimit < 100 ? Colours.palette.m3onPrimary : Colours.palette.m3onSurfaceVariant
+                    color: root.chargeLimit < 100 ? Colours.palette.onPrimary : Colours.palette.onSurfaceVariant
                 }
             }
         }
@@ -333,7 +333,7 @@ Column {
 
             width: parent.width
             implicitHeight: 50
-            color: Colours.tPalette.m3surfaceContainer
+            color: Colours.tPalette.surfaceContainer
             radius: Tokens.rounding.large
 
             Item {
@@ -358,7 +358,7 @@ Column {
                     anchors.rightMargin: thumb.width / 2
                     height: 6
                     radius: Tokens.rounding.full
-                    color: Colours.palette.m3surfaceContainerHighest
+                    color: Colours.palette.surfaceContainerHighest
                 }
 
                 StyledRect {
@@ -368,7 +368,7 @@ Column {
                     width: trackArea.usableWidth * trackArea.stepRatio
                     height: 6
                     radius: Tokens.rounding.full
-                    color: Colours.palette.m3primary
+                    color: Colours.palette.primary
 
                     Behavior on width {
                         Anim {}
@@ -389,7 +389,7 @@ Column {
                         width: 10
                         height: 10
                         radius: Tokens.rounding.full
-                        color: activeOrPassed ? Colours.palette.m3primary : Colours.palette.m3outlineVariant
+                        color: activeOrPassed ? Colours.palette.primary : Colours.palette.outlineVariant
 
                         Behavior on color {
                             CAnim {}
@@ -405,9 +405,9 @@ Column {
                     width: 18
                     height: 18
                     radius: Tokens.rounding.full
-                    color: Colours.palette.m3primary
+                    color: Colours.palette.primary
                     border.width: 3
-                    border.color: Colours.tPalette.m3surfaceContainer
+                    border.color: Colours.tPalette.surfaceContainer
 
                     Behavior on x {
                         Anim {}
@@ -453,7 +453,7 @@ Column {
                         anchors.verticalCenter: parent.verticalCenter
                         text: `${modelData}%`
                         font: Tokens.font.label.small
-                        color: isSelected ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                        color: isSelected ? Colours.palette.primary : Colours.palette.onSurfaceVariant
 
                         Behavior on color {
                             CAnim {}

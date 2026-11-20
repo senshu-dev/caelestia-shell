@@ -117,7 +117,7 @@ Item {
 
     StyledRect {
         anchors.fill: parent
-        color: Colours.palette.m3scrim
+        color: "black"
         opacity: root.closing ? 0 : 0.45
 
         Behavior on opacity {
@@ -139,9 +139,9 @@ Item {
         width: 560
         implicitHeight: mainCol.implicitHeight + Tokens.padding.extraLarge * 2
         radius: Tokens.rounding.extraLarge
-        color: Colours.tPalette.m3surfaceContainerHigh
+        color: Colours.tPalette.surfaceContainerHigh
         border.width: 1
-        border.color: Colours.palette.m3outlineVariant
+        border.color: Colours.palette.outlineVariant
         scale: root.closing ? 0.92 : 1
         opacity: root.closing ? 0 : 1
 
@@ -175,12 +175,12 @@ Item {
                     implicitWidth: 44
                     implicitHeight: 44
                     radius: Tokens.rounding.full
-                    color: Colours.palette.m3secondaryContainer
+                    color: Colours.palette.secondaryContainer
 
                     MaterialIcon {
                         anchors.centerIn: parent
                         text: "monitor"
-                        color: Colours.palette.m3onSecondaryContainer
+                        color: Colours.palette.onSecondaryContainer
                         fontStyle: Tokens.font.icon.medium
                     }
                 }
@@ -199,7 +199,7 @@ Item {
                     StyledText {
                         Layout.fillWidth: true
                         text: root.externalMonitorInfo
-                        color: Colours.palette.m3onSurfaceVariant
+                        color: Colours.palette.onSurfaceVariant
                         font: Tokens.font.label.small
                         elide: Text.ElideRight
                     }
@@ -215,7 +215,7 @@ Item {
 
             StyledText {
                 text: Tr.tr("Projection mode")
-                color: Colours.palette.m3onSurfaceVariant
+                color: Colours.palette.onSurfaceVariant
                 font: Tokens.font.label.medium
             }
 
@@ -238,9 +238,9 @@ Item {
                         Layout.fillWidth: true
                         implicitHeight: 68
                         radius: isSelected ? Tokens.rounding.large : Tokens.rounding.medium
-                        color: isSelected ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainer
+                        color: isSelected ? Colours.palette.secondaryContainer : Colours.tPalette.surfaceContainer
                         border.width: isSelected ? 2 : 0
-                        border.color: isSelected ? Colours.palette.m3primary : "transparent"
+                        border.color: isSelected ? Colours.palette.primary : "transparent"
 
                         Behavior on color {
                             CAnim {}
@@ -264,7 +264,7 @@ Item {
                                 implicitWidth: 36
                                 implicitHeight: 36
                                 radius: Tokens.rounding.full
-                                color: modeCard.isSelected ? Colours.palette.m3primary : Colours.tPalette.m3surfaceContainerHigh
+                                color: modeCard.isSelected ? Colours.palette.primary : Colours.tPalette.surfaceContainerHigh
 
                                 Behavior on color {
                                     CAnim {}
@@ -273,7 +273,7 @@ Item {
                                 MaterialIcon {
                                     anchors.centerIn: parent
                                     text: modeCard.modelData.icon
-                                    color: modeCard.isSelected ? Colours.palette.m3onPrimary : Colours.palette.m3onSurfaceVariant
+                                    color: modeCard.isSelected ? Colours.palette.onPrimary : Colours.palette.onSurfaceVariant
                                     fontStyle: Tokens.font.icon.small
                                 }
                             }
@@ -285,7 +285,7 @@ Item {
                                 StyledText {
                                     Layout.fillWidth: true
                                     text: modeCard.modelData.title
-                                    color: modeCard.isSelected ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
+                                    color: modeCard.isSelected ? Colours.palette.onSecondaryContainer : Colours.palette.onSurface
                                     font: Tokens.font.body.small
                                     elide: Text.ElideRight
                                 }
@@ -293,7 +293,7 @@ Item {
                                 StyledText {
                                     Layout.fillWidth: true
                                     text: modeCard.modelData.desc
-                                    color: Colours.palette.m3onSurfaceVariant
+                                    color: Colours.palette.onSurfaceVariant
                                     font: Tokens.font.label.small
                                     elide: Text.ElideRight
                                 }
@@ -320,7 +320,7 @@ Item {
                     StyledText {
                         Layout.fillWidth: true
                         text: Tr.tr("External display scale")
-                        color: Colours.palette.m3onSurfaceVariant
+                        color: Colours.palette.onSurfaceVariant
                         font: Tokens.font.label.medium
                     }
 
@@ -328,14 +328,14 @@ Item {
                         implicitWidth: scaleBadgeText.implicitWidth + Tokens.padding.small * 2
                         implicitHeight: scaleBadgeText.implicitHeight + 4
                         radius: Tokens.rounding.full
-                        color: Colours.palette.m3primary
+                        color: Colours.palette.primary
 
                         StyledText {
                             id: scaleBadgeText
 
                             anchors.centerIn: parent
                             text: root.pendingMode === "mirror" ? "1:1" : `${root.scaleLabels[root.scaleIndex]} (${root.pendingScale}x)`
-                            color: Colours.palette.m3onPrimary
+                            color: Colours.palette.onPrimary
                             font: Tokens.font.label.small
                         }
                     }
@@ -345,7 +345,7 @@ Item {
                     Layout.fillWidth: true
                     implicitHeight: 58
                     radius: Tokens.rounding.large
-                    color: Colours.tPalette.m3surfaceContainer
+                    color: Colours.tPalette.surfaceContainer
 
                     Item {
                         id: sliderTrack
@@ -369,7 +369,7 @@ Item {
                             anchors.rightMargin: thumb.width / 2
                             height: 6
                             radius: Tokens.rounding.full
-                            color: Colours.palette.m3surfaceContainerHighest
+                            color: Colours.palette.surfaceContainerHighest
                         }
 
                         StyledRect {
@@ -379,7 +379,7 @@ Item {
                             width: sliderTrack.usableWidth * sliderTrack.stepRatio
                             height: 6
                             radius: Tokens.rounding.full
-                            color: Colours.palette.m3primary
+                            color: Colours.palette.primary
 
                             Behavior on width {
                                 Anim {}
@@ -400,7 +400,7 @@ Item {
                                 width: 10
                                 height: 10
                                 radius: Tokens.rounding.full
-                                color: passed ? Colours.palette.m3primary : Colours.palette.m3outlineVariant
+                                color: passed ? Colours.palette.primary : Colours.palette.outlineVariant
 
                                 Behavior on color {
                                     CAnim {}
@@ -416,9 +416,9 @@ Item {
                             width: 20
                             height: 20
                             radius: Tokens.rounding.full
-                            color: Colours.palette.m3primary
+                            color: Colours.palette.primary
                             border.width: 3
-                            border.color: Colours.tPalette.m3surfaceContainer
+                            border.color: Colours.tPalette.surfaceContainer
 
                             Behavior on x {
                                 Anim {}
@@ -465,7 +465,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: modelData
                                 font: Tokens.font.label.small
-                                color: isCurrent ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                                color: isCurrent ? Colours.palette.primary : Colours.palette.onSurfaceVariant
                             }
                         }
                     }
@@ -479,15 +479,15 @@ Item {
                 StyledText {
                     Layout.fillWidth: true
                     text: Tr.tr("Click outside or press Apply to confirm.")
-                    color: Colours.palette.m3onSurfaceVariant
+                    color: Colours.palette.onSurfaceVariant
                     font: Tokens.font.label.small
                     wrapMode: Text.WordWrap
                 }
 
                 TextButton {
                     text: root.hasChanges ? Tr.tr("Apply") : Tr.tr("Done")
-                    inactiveColour: Colours.palette.m3primary
-                    inactiveOnColour: Colours.palette.m3onPrimary
+                    inactiveColour: Colours.palette.primary
+                    inactiveOnColour: Colours.palette.onPrimary
                     onClicked: root.commitAndClose()
                 }
             }
