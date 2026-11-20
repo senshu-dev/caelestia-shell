@@ -157,47 +157,25 @@ Singleton {
 
         const cmds = [];
         const addInt = enabled => {
-            if (usingLua) {
-                if (enabled)
-                    cmds.push(`eval hl.monitor({ output = "${intName}", mode = "${intMode}", position = "0x0", scale = ${intScale}, disabled = false })`);
-                else
-                    cmds.push(`eval hl.monitor({ output = "${intName}", disabled = true })`);
-            } else {
-                if (enabled)
-                    cmds.push(`keyword monitor ${intName},${intMode},0x0,${intScale}`);
-                else
-                    cmds.push(`keyword monitor ${intName},disable`);
-            }
+            if (enabled)
+                cmds.push(`eval hl.monitor({ output = "${intName}", mode = "${intMode}", position = "0x0", scale = ${intScale}, disabled = false })`);
+            else
+                cmds.push(`eval hl.monitor({ output = "${intName}", disabled = true })`);
         };
 
         const addExt = target => {
-            if (usingLua) {
-                if (mode === "extend")
-                    cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto-right", scale = ${scale}, disabled = false })`);
-                else if (mode === "extend-up")
-                    cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto-center-up", scale = ${scale}, disabled = false })`);
-                else if (mode === "extend-left")
-                    cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto-left", scale = ${scale}, disabled = false })`);
-                else if (mode === "mirror")
-                    cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto", scale = 1, mirror = "${intName}", disabled = false })`);
-                else if (mode === "external")
-                    cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "0x0", scale = ${scale}, disabled = false })`);
-                else if (mode === "internal")
-                    cmds.push(`eval hl.monitor({ output = "${target}", disabled = true })`);
-            } else {
-                if (mode === "extend")
-                    cmds.push(`keyword monitor ${target},preferred,auto-right,${scale}`);
-                else if (mode === "extend-up")
-                    cmds.push(`keyword monitor ${target},preferred,auto-center-up,${scale}`);
-                else if (mode === "extend-left")
-                    cmds.push(`keyword monitor ${target},preferred,auto-left,${scale}`);
-                else if (mode === "mirror")
-                    cmds.push(`keyword monitor ${target},preferred,auto,1,mirror,${intName}`);
-                else if (mode === "external")
-                    cmds.push(`keyword monitor ${target},preferred,0x0,${scale}`);
-                else if (mode === "internal")
-                    cmds.push(`keyword monitor ${target},disable`);
-            }
+            if (mode === "extend")
+                cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto-right", scale = ${scale}, disabled = false })`);
+            else if (mode === "extend-up")
+                cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto-center-up", scale = ${scale}, disabled = false })`);
+            else if (mode === "extend-left")
+                cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto-left", scale = ${scale}, disabled = false })`);
+            else if (mode === "mirror")
+                cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "auto", scale = 1, mirror = "${intName}", disabled = false })`);
+            else if (mode === "external")
+                cmds.push(`eval hl.monitor({ output = "${target}", mode = "preferred", position = "0x0", scale = ${scale}, disabled = false })`);
+            else if (mode === "internal")
+                cmds.push(`eval hl.monitor({ output = "${target}", disabled = true })`);
         };
 
         if (mode === "external") {
@@ -214,7 +192,6 @@ Singleton {
             extras.batchMessage(cmds);
     }
 
-    onUsingLuaChanged: reloadDynamicConfs()
     Component.onCompleted: reloadDynamicConfs()
 
     Connections {
