@@ -118,6 +118,7 @@ Item {
 
         anchors.fill: parent
         visible: root.transitionProgress < 1
+        vertexShader: Shaders.passthrough
         fragmentShader: root.shader.url
     }
 }
