@@ -70,7 +70,7 @@ StyledWindow {
         onTriggered: root.dismiss()
     }
 
-    StyledClippingRect {
+    StyledRect {
         id: card
 
         readonly property int edgeMargin: Tokens.padding.large
@@ -79,6 +79,7 @@ StyledWindow {
 
         color: Colours.tPalette.m3surfaceContainer
         radius: Tokens.rounding.large
+        clip: true
         implicitWidth: img.width + Tokens.padding.small * 2
         implicitHeight: img.height + Tokens.padding.small * 2
         anchors.fill: parent
