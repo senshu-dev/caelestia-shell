@@ -124,11 +124,12 @@ Item {
             }
         }
 
-        StyledFlickable {
+        VerticalFadeFlickable {
             id: view
 
             anchors.fill: parent
 
+            fadeAmount: 0.08
             flickableDirection: Flickable.VerticalFlick
             contentWidth: width
             contentHeight: notifList.implicitHeight
