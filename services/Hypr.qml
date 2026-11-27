@@ -125,7 +125,7 @@ Singleton {
     }
 
     function reloadDynamicConfs(): void {
-        extras.batchMessage(['eval hl.bind("Caps_Lock", hl.dsp.global("caelestia:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })', 'eval hl.bind("Num_Lock", hl.dsp.global("caelestia:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })', 'eval hl.bind("code:66", hl.dsp.global("caelestia:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })']);
+        extras.batchMessage(["Caps_Lock", "Num_Lock", "code:66"].map(key => `eval pcall(hl.unbind, "${key}"); hl.bind("${key}", hl.dsp.global("caelestia:refreshDevices"), { locked = true, non_consuming = true, ignore_mods = true, release = true })`));
     }
 
     function applyMonitorLayout(mode: string, scale: real): void {

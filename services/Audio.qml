@@ -24,6 +24,8 @@ Singleton {
 
     readonly property bool muted: !!sink?.audio?.muted
     readonly property real volume: sink?.audio?.volume ?? 0
+    readonly property bool silent: muted || volume <= 0
+    property real volumeBeforeMute: 0
 
     readonly property bool sourceMuted: !!source?.audio?.muted
     readonly property real sourceVolume: source?.audio?.volume ?? 0
@@ -35,6 +37,21 @@ Singleton {
         if (sink?.ready && sink?.audio) {
             sink.audio.muted = false;
             sink.audio.volume = Math.max(0, Math.min(GlobalConfig.services.maxVolume, newVolume));
+        }
+    }
+
+    function toggleMuted(): void {
+        if (!(sink?.ready && sink?.audio))
+            return;
+
+        const audio = sink.audio;
+        if (audio.muted || audio.volume <= 0) {
+            audio.muted = false;
+            if (audio.volume <= 0)
+                audio.volume = Math.min(GlobalConfig.services.maxVolume, root.volumeBeforeMute > 0 ? root.volumeBeforeMute : 0.5);
+        } else {
+            root.volumeBeforeMute = audio.volume;
+            audio.volume = 0;
         }
     }
 
