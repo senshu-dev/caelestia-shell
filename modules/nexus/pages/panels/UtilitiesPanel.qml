@@ -73,11 +73,18 @@ PageBase {
         }
 
         ToggleRow {
-            last: true
             text: Tr.tr("Quick toggles")
             subtext: Tr.tr("Show the quick toggles card")
             checked: Config.utilities.cards.quickToggles
             onToggled: GlobalConfig.utilities.cards.quickToggles = checked
+        }
+
+        ToggleRow {
+            last: true
+            text: Tr.tr("App volumes")
+            subtext: Tr.tr("Show per-app volume sliders")
+            checked: Config.utilities.cards.appVolumes
+            onToggled: GlobalConfig.utilities.cards.appVolumes = checked
         }
 
         // Quick toggles
