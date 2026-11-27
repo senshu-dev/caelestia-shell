@@ -8,6 +8,9 @@ import qs.utils
 Searcher {
     id: root
 
+    readonly property real maxFrequencyBoost: 0.35
+    readonly property int frequencyHalfLife: 5
+
     function launch(entry: DesktopEntry): void {
         appDb.incrementFrequency(entry.id);
 
@@ -61,6 +64,8 @@ Searcher {
     function selector(item: var): string {
         return keys.map(k => item[k]).join(" ");
     }
+
+    rankBoost: app => root.maxFrequencyBoost * (1 - 1 / (1 + (app?.frequency ?? 0) / root.frequencyHalfLife))
 
     list: appDb.apps
     useFuzzy: GlobalConfig.launcher.useFuzzy.apps

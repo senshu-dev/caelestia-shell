@@ -9,6 +9,8 @@ Singleton {
     property bool useFuzzy: false
     property var extraOpts: ({})
 
+    property var rankBoost: null
+
     // Extra stuff for fuzzy
     property list<string> keys: [key]
     property list<real> weights: [1]
@@ -34,6 +36,10 @@ Singleton {
         return item[key];
     }
 
+    function boostedScore(item: var, score: real): real {
+        return rankBoost ? score + Math.abs(score) * rankBoost(item) : score;
+    }
+
     function query(search: string): var {
         search = transformSearch(search.trim().replace(/\s+/g, " "));
         if (!search)
@@ -43,10 +49,13 @@ Singleton {
             return Fuzzy.go(search, fuzzyPrepped, Object.assign({
                 all: true,
                 keys,
-                scoreFn: r => weights.reduce((a, w, i) => a + r[i].score * w, 0)
+                scoreFn: r => boostedScore(r.obj._item, weights.reduce((a, w, i) => a + r[i].score * w, 0))
             }, extraOpts)).map(r => r.obj._item);
 
-        return fzf.find(search).sort((a, b) => {
+        return fzf.find(search).map(r => ({
+                    item: r.item,
+                    score: boostedScore(r.item, r.score)
+                })).sort((a, b) => {
             if (a.score === b.score)
                 return selector(a.item).trim().length - selector(b.item).trim().length;
             return b.score - a.score;
