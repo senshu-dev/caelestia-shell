@@ -33,6 +33,8 @@ Singleton {
     readonly property alias cava: cava
     readonly property alias beatTracker: beatTracker
 
+    signal volumeLimitReached()
+
     function setVolume(newVolume: real): void {
         if (sink?.ready && sink?.audio) {
             sink.audio.muted = false;
@@ -55,12 +57,27 @@ Singleton {
         }
     }
 
+    function adjustVolume(newVolume: real): void {
+        if (sink?.ready && sink?.audio)
+            sink.audio.volume = Math.max(0, Math.min(GlobalConfig.services.maxVolume, newVolume));
+    }
+
     function incrementVolume(amount: real): void {
-        setVolume(volume + (amount || GlobalConfig.services.audioIncrement));
+        if (root.volume >= GlobalConfig.services.maxVolume) {
+            root.volumeLimitReached();
+            return;
+        }
+
+        adjustVolume(volume + (amount || GlobalConfig.services.audioIncrement));
     }
 
     function decrementVolume(amount: real): void {
-        setVolume(volume - (amount || GlobalConfig.services.audioIncrement));
+        if (root.volume <= 0) {
+            root.volumeLimitReached();
+            return;
+        }
+
+        adjustVolume(volume - (amount || GlobalConfig.services.audioIncrement));
     }
 
     function setSourceVolume(newVolume: real): void {
