@@ -107,6 +107,13 @@ ColumnLayout {
                 elide: Text.ElideRight
             }
 
+            StyledText {
+                visible: device.modelData.state === BluetoothDeviceState.Connected && device.modelData.batteryAvailable
+                text: Strings.percentOne(device.modelData.battery)
+                color: device.modelData.battery < 0.2 ? Colours.palette.error : Colours.palette.onSurfaceVariant
+                font: Tokens.font.label.small
+            }
+
             MaterialIcon {
                 visible: device.modelData.state === BluetoothDeviceState.Connected
                 text: device.modelData.batteryAvailable ? Icons.getBatteryIcon(device.modelData.battery) : "battery_alert"
